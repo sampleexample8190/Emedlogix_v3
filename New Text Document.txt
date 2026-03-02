@@ -1,0 +1,7 @@
+the ocr document and the database integration is properly assembled and maintained 
+when the doctor document is uploaded in the any format at that time also it will properly fetch and provide the slution in the db 
+yet to complete 
+
+1) provider chatbot error 
+2)chatbot access for the db for both the provider and the admin 
+3) the ai bot has to be placed in the dashboard of the admin

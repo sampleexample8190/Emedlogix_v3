@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+httpx
+pydantic
+python-dotenv
+python-multipart
+requests
+pymupdf
+pillow
+transformers
+torch
+accelerate
+qwen-vl-utils
+pyjwt
+bcrypt
+psycopg2-binary

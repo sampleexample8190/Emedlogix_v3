@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eMedLogix | Admin Control Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0369a1;
+      --primary-light: #0ea5e9;
+      --primary-soft: #e0f2fe;
+      --sidebar: linear-gradient(180deg, #033a71 0%, #011d3a 100%);
+      --success: #059669;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --bg: #f0f9ff;
+      --surface: #fbfdff;
+      --border: #bae6fd;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow: 0 10px 15px -3px rgba(3, 105, 161, 0.1), 0 4px 6px -2px rgba(3, 105, 161, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Login */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--sidebar);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .login-card {
+      background: rgba(248, 250, 252, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 3rem;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+    }
+
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+
+    .brand-name {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text-main);
+    }
+
+    input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      outline: none;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-soft);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 1.5rem;
+    }
+
+    .btn-primary:hover {
+      background: #003d80;
+      transform: translateY(-1px);
+    }
+
+    /* Dashboard Layout */
+    #dashboard {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar);
+      padding: 2.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      color: white;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0.875rem 1.25rem;
+      border-radius: 12px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-bottom: 6px;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 74, 153, 0.3);
+    }
+
+    .main-content {
+      margin-left: 280px;
+      flex: 1;
+      padding: 2.5rem;
+      max-width: 1500px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--sidebar);
+    }
+
+    /* Grid & Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: #fbfdff;
+      padding: 1.75rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-top: 0.5rem;
+      color: var(--sidebar);
+    }
+
+    .card {
+      background: #f0f9ff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+
+    .card-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(224, 242, 254, 0.5);
+    }
+
+    .card-title {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--sidebar);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #e0f2fe;
+      padding: 1.25rem 2rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 1.25rem 2rem;
+      border-top: 1px solid var(--border);
+      vertical-align: middle;
+      font-size: 0.9375rem;
+      background: #fbfdff;
+    }
+
+    tr:hover td {
+      background: #f0f7ff;
+    }
+
+    .badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Detail Area */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .btn-back {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--bg);
+      transform: translateX(-4px);
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .tab-item {
+      padding: 1rem 0;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 700;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    .tab-item.active {
+      color: var(--primary);
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .info-card {
+      background: #fbfdff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      position: relative;
+      box-shadow: 0 4px 6px -1px rgba(3, 105, 161, 0.05);
+    }
+
+    .info-card-title {
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.875rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 0.9375rem;
+      border-bottom: 1px solid #e0f2fe;
+      padding-bottom: 6px;
+      align-items: start;
+    }
+
+    .info-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      min-width: 140px;
+    }
+
+    .info-value {
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: right;
+      word-break: break-word;
+    }
+
+    /* Edit Elements */
+    .btn-edit-inline {
+      opacity: 0;
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: 700;
+      background: var(--primary-soft);
+      border: none;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-left: 8px;
+    }
+
+    .info-row:hover .btn-edit-inline {
+      opacity: 1;
+    }
+
+    .edit-input {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      border: 2px solid var(--primary);
+      padding: 4px 8px;
+      border-radius: 6px;
+      width: 100%;
+      outline: none;
+      margin-bottom: 4px;
+    }
+
+    .edit-controls {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn-save {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background: #e2e8f0;
+      color: var(--sidebar);
+      border: none;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--sidebar);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 10000;
+      border-bottom: 4px solid var(--primary);
+      font-weight: 600;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ── Notification Bell ── */
+    .notif-bell-btn {
+      position: relative;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: 0.2s;
+    }
+
+    .notif-bell-btn:hover {
+      background: var(--bg);
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Notification Panel ── */
+    #notif-panel {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 420px;
+      height: 100vh;
+      background: white;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.12);
+      z-index: 9000;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--border);
+    }
+
+    #notif-panel.open {
+      right: 0;
+    }
+
+    .notif-panel-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(90deg, #f0f9ff, white);
+    }
+
+    .notif-panel-header h3 {
+      font-weight: 800;
+      color: var(--sidebar);
+      font-size: 1rem;
+    }
+
+    .notif-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .notif-item {
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    .notif-item:hover {
+      background: #f0f7ff;
+      border-color: var(--primary-light);
+    }
+
+    .notif-item.unread {
+      background: #e0f2fe;
+      border-color: var(--primary-light);
+    }
+
+    .notif-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 60%;
+      background: var(--primary);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .notif-msg {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .notif-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .notif-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-approve-sm {
+      padding: 5px 12px;
+      background: #d1fae5;
+      color: #065f46;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-approve-sm:hover {
+      background: #059669;
+      color: white;
+    }
+
+    .btn-reject-sm {
+      padding: 5px 12px;
+      background: #fee2e2;
+      color: #991b1b;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-reject-sm:hover {
+      background: #dc2626;
+      color: white;
+    }
+
+    /* ── Status Badges ── */
+    .badge-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-reupload {
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+
+    /* ── Modal Overlay ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 520px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-box h3 {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--sidebar);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .btn-modal-cancel {
+      padding: 0.75rem 1.5rem;
+      background: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-modal-submit {
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-modal-submit.danger {
+      background: var(--danger);
+    }
+
+    /* ── Chatbot UI ── */
+    #chat-bubble {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+      cursor: pointer;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #chat-bubble:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4);
+    }
+
+    #chat-bubble i {
+      font-size: 1.2rem;
+    }
+
+    #chat-window {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 380px;
+      height: 500px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      transform-origin: bottom right;
+    }
+
+    #chat-window.hidden {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chat-header {
+      padding: 1.25rem;
+      background: var(--sidebar);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-header-info i {
+      font-size: 1.5rem;
+      color: var(--primary-light);
+    }
+
+    .chat-header h4 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .status-online {
+      font-size: 0.7rem;
+      color: #4ade80;
+      display: block;
+    }
+
+    .chat-header button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .chat-header button:hover {
+      opacity: 1;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .bot-msg {
+      align-self: flex-start;
+      background: white;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 2px;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background: var(--primary);
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+
+    .chat-input-area {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      background: white;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .chat-input-area input:focus {
+      border-color: var(--primary);
+    }
+
+    .chat-input-area button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .typing {
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      align-self: flex-start;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon">L</div>
+        <div class="brand-name">eMedLogix</div>
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="font-size: 0.875rem; font-weight: 700; color: var(--text-muted);">Administrative
+          Credentials</label>
+        <input type="email" id="login-email" value="admin@emed.com" placeholder="Email Address">
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="font-size: 0.875rem; font-weight: 700; color: var(--text-muted);">Security Passcode</label>
+        <input type="password" id="login-pass" value="Admin@1234" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Initialize Secure Login</button>
+      <div id="login-error"
+        style="color: var(--danger); font-size: 0.875rem; margin-top: 1.25rem; text-align: center; font-weight: 600;">
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard">
+    <aside class="sidebar">
+      <div class="login-logo">
+        <div class="logo-icon" style="width:36px; height:36px; font-size:1.2rem;">L</div>
+        <div class="brand-name" style="color:white; font-size:1.5rem; letter-spacing:-0.05em;">eMedLogix</div>
+      </div>
+      <nav style="margin-top: 3rem; flex: 1;">
+        <div class="nav-item active" id="nav-overview" onclick="showView('overview')">Executive Dashboard</div>
+        <div class="nav-item" id="nav-providers" onclick="showView('providers')">Master Provider Registry</div>
+      </nav>
+      <div class="nav-item" style="margin-top: auto; color: #fda4af; font-size: 0.85rem;" onclick="doLogout()">Terminate
+        Secure Session</div>
+    </aside>
+
+    <main class="main-content">
+      <div class="header">
+        <h1 id="view-title">Executive Dashboard</h1>
+        <div style="display: flex; gap: 1.25rem; align-items: center;">
+          <!-- Notification Bell -->
+          <button class="notif-bell-btn" id="notif-bell" onclick="toggleNotifPanel()" title="Notifications">
+            🔔
+            <span class="notif-badge hidden" id="notif-badge">0</span>
+          </button>
+          <div style="text-align: right;">
+            <div style="font-weight: 800; font-size: 1rem;">Administrator Control</div>
+            <div style="font-size: 0.75rem; color: var(--primary); font-weight: 700;">AUDIT ACCESS TIER-1</div>
+          </div>
+          <div
+            style="width:44px; height:44px; border-radius:12px; background:var(--primary); color:white; display:grid; place-items:center; font-weight:800; box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);">
+            AC</div>
+        </div>
+      </div>
+
+      <!-- Dashboard Views -->
+      <div id="view-overview">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Network Engagement</div>
+            <div class="stat-value" id="count-ov">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending Verifications</div>
+            <div class="stat-value" style="color: var(--warning);">12</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">System Data Health</div>
+            <div class="stat-value" style="color: var(--success);">99.2%</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Network Activity</div><button class="btn-primary"
+              style="width:auto; margin:0; padding:8px 16px; font-size:0.8rem;" onclick="showView('providers')">View
+              Global Registry</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Provider Entity</th>
+                <th>Identity Contact</th>
+                <th>Documents Uploaded</th>
+                <th>Record Status</th>
+                <th>Added</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="recent-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="view-providers" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Global Unified Registry</div><input type="text"
+              placeholder="Search by name, email, NPI..." style="width: 350px;" id="search-input"
+              oninput="filterProviders()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Provider Entity</th>
+                <th>Email</th>
+                <th>Documents & Status</th>
+                <th>Validation</th>
+                <th>Onboarded</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="all-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="view-detail" class="hidden">
+        <div class="detail-header"><button class="btn-back" onclick="showView('providers')">←</button>
+          <div style="flex:1">
+            <h2 id="det-name" style="font-weight:900; color:var(--sidebar);">—</h2>
+            <div style="color: var(--text-muted); font-weight:600;" id="det-email">—</div>
+          </div>
+          <!-- Verification Action Buttons -->
+          <div style="display:flex;gap:10px;" id="verify-actions">
+            <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:0.85rem;background:#059669;"
+              onclick="openApproveModal()">✅ Approve Documents</button>
+            <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:0.85rem;background:var(--danger);"
+              onclick="openRejectModal()">❌ Reject Document</button>
+          </div>
+        </div>
+
+        <!-- ── Re-upload Requests Panel ── -->
+        <div id="reupload-panel" class="hidden" style="margin-bottom:2rem;">
+          <div class="card" style="border-left:4px solid #7c3aed;margin-bottom:0;">
+            <div class="card-header" style="background:linear-gradient(90deg,#f5f3ff,#ede9fe);">
+              <div class="card-title" style="color:#5b21b6;">🔄 Re-upload Requests</div>
+              <span style="font-size:0.8rem;color:#7c3aed;font-weight:700;">Review pending re-upload requests from this
+                provider</span>
+            </div>
+            <div id="reupload-rows" style="padding:1.25rem 2rem;display:flex;flex-direction:column;gap:0.875rem;"></div>
+          </div>
+        </div>
+
+        <div class="tab-nav">
+          <div class="tab-item active" id="tab-app" onclick="switchTab('app')">Provider Verification Profile</div>
+          <div class="tab-item" id="tab-ocr" onclick="switchTab('ocr')">Source Document Audit</div>
+        </div>
+        <div id="det-app-content" class="info-grid"></div>
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- AI Chatbot UI -->
+        <div id="chat-bubble" onclick="toggleChat()">
+          <i class="fas fa-robot"></i>
+          <span>AI Assistant</span>
+        </div>
+
+        <div id="chat-window" class="hidden">
+          <div class="chat-header">
+            <div class="chat-header-info">
+              <i class="fas fa-robot"></i>
+              <div>
+                <h4>Credentialing Assistant</h4>
+                <span class="status-online">Online</span>
+              </div>
+            </div>
+            <button onclick="toggleChat()"><i class="fas fa-times"></i></button>
+          </div>
+          <div id="chat-messages" class="chat-messages">
+            <div class="chat-msg bot-msg">Hello! I'm your Credentialing Assistant. How can I help you with this
+              provider's data today?</div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask about this provider..."
+              onkeypress="handleChatKey(event)">
+            <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+        <div id="det-ocr-content" class="info-grid hidden"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ── Notification Panel ── -->
+  <div id="notif-panel">
+    <div class="notif-panel-header">
+      <h3>🔔 Admin Notifications</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button onclick="clearAllNotifications()"
+          style="font-size:0.75rem;font-weight:700;color:var(--danger);background:none;border:none;cursor:pointer;">Clear
+          all</button>
+        <button onclick="markAllRead()"
+          style="font-size:0.75rem;font-weight:700;color:var(--primary);background:none;border:none;cursor:pointer;">Mark
+          all read</button>
+        <button onclick="toggleNotifPanel()"
+          style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:#64748b;">✕</button>
+      </div>
+    </div>
+    <div class="notif-list" id="notif-list">
+      <div style="padding:2rem;text-align:center;color:var(--text-muted);font-weight:600;">No notifications</div>
+    </div>
+  </div>
+  <div id="notif-overlay" style="display:none;position:fixed;inset:0;z-index:8999;" onclick="toggleNotifPanel()"></div>
+
+  <!-- ── Approve Modal ── -->
+  <div class="modal-overlay hidden" id="approve-modal">
+    <div class="modal-box">
+      <h3>✅ Approve Documents</h3>
+      <p style="color:var(--text-muted);font-size:0.875rem;margin-bottom:1.5rem;">Select which document types to approve
+        for this provider.</p>
+      <div class="form-group">
+        <label>Document Types to Approve</label>
+        <div class="checkbox-grid" id="approve-checkboxes">
+          <label class="checkbox-item"><input type="checkbox" value="tax_id"> Tax ID / IRS Letter</label>
+          <label class="checkbox-item"><input type="checkbox" value="state_medical_license"> State Medical
+            License</label>
+          <label class="checkbox-item"><input type="checkbox" value="malpractice_insurance"> Malpractice
+            Insurance</label>
+          <label class="checkbox-item"><input type="checkbox" value="dea_certificate"> Federal DEA Certificate</label>
+          <label class="checkbox-item"><input type="checkbox" value="board_certification"> Board Certification</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeApproveModal()">Cancel</button>
+        <button class="btn-modal-submit" onclick="submitApprove()">Approve Selected</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Reject Modal ── -->
+  <div class="modal-overlay hidden" id="reject-modal">
+    <div class="modal-box">
+      <h3>❌ Reject Document</h3>
+      <div class="form-group">
+        <label>Document Type *</label>
+        <select id="reject-doc-type">
+          <option value="">Select document...</option>
+          <option value="tax_id">Tax ID / IRS Letter</option>
+          <option value="state_medical_license">State Medical License</option>
+          <option value="malpractice_insurance">Malpractice Insurance</option>
+          <option value="dea_certificate">Federal DEA Certificate</option>
+          <option value="board_certification">Board Certification</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rejection Reason * <span style="font-weight:400;color:var(--text-muted);">(shown to
+            provider)</span></label>
+        <textarea id="reject-reason" rows="3"
+          placeholder="Explain what is wrong and what needs to be corrected..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Fields Needing Correction <span
+            style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+        <div class="checkbox-grid" id="reject-fields-grid">
+          <label class="checkbox-item"><input type="checkbox" value="provider_name"> Provider Name</label>
+          <label class="checkbox-item"><input type="checkbox" value="issue_date"> Issue Date</label>
+          <label class="checkbox-item"><input type="checkbox" value="expiration_date"> Expiration Date</label>
+          <label class="checkbox-item"><input type="checkbox" value="license_number"> License Number</label>
+          <label class="checkbox-item"><input type="checkbox" value="ein"> EIN / Tax ID</label>
+          <label class="checkbox-item"><input type="checkbox" value="dea_number"> DEA Number</label>
+          <label class="checkbox-item"><input type="checkbox" value="policy_number"> Policy Number</label>
+          <label class="checkbox-item"><input type="checkbox" value="address_street"> Address</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeRejectModal()">Cancel</button>
+        <button class="btn-modal-submit danger" onclick="submitReject()">Submit Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-root"></div>
+
+  <script>
+    const API = 'http://localhost:8000/api/admin';
+    let token = sessionStorage.getItem('admin_token') || '';
+    let allProviders = [];
+    let currentDetailData = null;
+    let currentViewDoctorId = null;
+    let currentDocStatuses = {};
+
+    async function doLogin() {
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-pass').value;
+      try {
+        const res = await fetch(`${API}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
+        const d = await res.json(); if (!res.ok) throw new Error(d.detail);
+        token = d.token; sessionStorage.setItem('admin_token', token);
+        initDashboard();
+      } catch (e) { document.getElementById('login-error').textContent = e.message; }
+    }
+    function doLogout() { sessionStorage.clear(); location.reload(); }
+
+    function showView(view) {
+      ['overview', 'providers', 'detail'].forEach(v => {
+        const el = document.getElementById('view-' + v); if (el) el.classList.add('hidden');
+        const nav = document.getElementById('nav-' + v); if (nav) nav.classList.remove('active');
+      });
+      const target = document.getElementById('view-' + view); if (target) target.classList.remove('hidden');
+      const activeNav = document.getElementById('nav-' + view); if (activeNav) activeNav.classList.add('active');
+
+      const titles = {
+        'overview': 'Executive Dashboard',
+        'providers': 'Master Provider Registry',
+        'detail': 'Provider Investigation Data'
+      };
+      document.getElementById('view-title').textContent = titles[view] || 'Control Center';
+    }
+
+    async function initDashboard() {
+      if (!token) return;
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('dashboard').style.display = 'flex';
+      try {
+        const res = await fetch(`${API}/providers`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const d = await res.json(); allProviders = d.providers;
+        document.getElementById('count-ov').textContent = allProviders.length;
+        renderTables();
+        fetchNotifications();
+        // Poll every 30 seconds
+        setInterval(fetchNotifications, 30000);
+        setInterval(async () => {
+          const res2 = await fetch(`${API}/providers`, { headers: { 'Authorization': `Bearer ${token}` } });
+          const d2 = await res2.json(); allProviders = d2.providers;
+          document.getElementById('count-ov').textContent = allProviders.length;
+          renderTables();
+        }, 30000);
+      } catch (e) { toast('Critical: Auth Terminal', 'error'); doLogout(); }
+    }
+
+    function statusBadge(statuses) {
+      if (!statuses || !Object.keys(statuses).length) return '<span class="badge badge-warning">PENDING</span>';
+      const vals = Object.values(statuses);
+      const approved = vals.filter(s => s === 'approved').length;
+      const rejected = vals.filter(s => s === 'rejected').length;
+      const reuRequested = vals.filter(s => s === 'reupload_requested').length;
+      if (rejected > 0) return `<span class="badge badge-rejected">REJECTED (${rejected})</span>`;
+      if (reuRequested > 0) return `<span class="badge badge-reupload">REUPLOAD REQ</span>`;
+      if (approved > 0 && approved === vals.length) return `<span class="badge badge-approved">ALL APPROVED</span>`;
+      if (approved > 0) return `<span class="badge badge-success">${approved} APPROVED</span>`;
+      return '<span class="badge badge-warning">PENDING</span>';
+    }
+
+    /**
+     * Returns true when every uploaded document for a provider has been fully
+     * reviewed by the admin (i.e. status is 'approved' or 'rejected').
+     * A provider with NO uploaded documents is NOT considered fully reviewed.
+     * Re-upload requests / new uploads reset the provider back to "active".
+     */
+    function isFullyReviewed(p) {
+      const statuses = p.document_statuses || {};
+      const vals = Object.values(statuses);
+      // Must have at least one reviewed document
+      if (!vals.length) return false;
+      // "Active" statuses — these mean action is still needed from the admin
+      const activeCond = ['pending', 'not_uploaded', 'reupload_requested', 'reupload_approved'];
+      return !vals.some(s => activeCond.includes(s));
+    }
+
+    function renderTables() {
+      const buildRow = (p, forRecent) => {
+        const docCount = p.total_documents || 0;
+        const statusHtml = statusBadge(p.document_statuses);
+        const reuReq = p.has_reupload_request
+          ? ` <button onclick="viewProvider('${p.doctor_id}')" style="font-size:0.7rem;background:#ede9fe;color:#5b21b6;padding:3px 8px;border-radius:4px;font-weight:700;border:1px solid #c4b5fd;cursor:pointer;margin-left:4px;transition:0.2s;" onmouseover="this.style.background='#7c3aed';this.style.color='white'" onmouseout="this.style.background='#ede9fe';this.style.color='#5b21b6'">🔄 REUPLOAD REQ</button>`
+          : '';
+
+        // ── Recent Activity: disable row when fully reviewed ──────────────
+        if (forRecent && isFullyReviewed(p)) {
+          return `<tr title="All documents have been reviewed. Row will re-activate if the provider uploads or requests re-upload."
+            style="opacity:0.45;pointer-events:none;filter:grayscale(60%);">
+            <td><div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:#e2e8f0;color:#94a3b8;display:grid;place-items:center;font-weight:900;">${p.name ? p.name[0] : '?'}</div>
+              <div style="font-weight:800;color:#94a3b8;">${p.name || 'Pending Record'}</div>
+            </div></td>
+            <td style="color:#94a3b8;">${p.email}</td>
+            <td style="color:#94a3b8;">${docCount} Docs</td>
+            <td>${statusHtml}<span style="font-size:0.7rem;color:#64748b;margin-left:6px;font-weight:600;">✅ Reviewed</span></td>
+            <td style="color:#94a3b8;">${new Date(p.created_at).toLocaleDateString()}</td>
+            <td style="text-align:right;"><button class="btn-primary" style="width:auto;padding:6px 14px;font-size:0.75rem;opacity:0.5;cursor:not-allowed;" disabled>Audit Detail</button></td>
+          </tr>`;
+        }
+
+        const rowStyle = p.has_reupload_request ? 'cursor:pointer;' : '';
+
+        if (forRecent) {
+          return `<tr style="${rowStyle}"><td><div style="display:flex;align-items:center;gap:12px;"><div style="width:36px;height:36px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:900;">${p.name ? p.name[0] : '?'}</div><div style="font-weight:800;color:var(--sidebar);">${p.name || 'Pending Record'}</div></div></td><td>${p.email}</td><td>${docCount} Docs</td><td>${statusHtml}${reuReq}</td><td>${new Date(p.created_at).toLocaleDateString()}</td><td style="text-align:right"><button class="btn-primary" style="width:auto;padding:6px 14px;font-size:0.75rem;" onclick="viewProvider('${p.doctor_id}', false)">Audit Detail</button></td></tr>`;
+        }
+
+        return `<tr style="${rowStyle}">
+          <td>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:900;">${p.name ? p.name[0] : '?'}</div>
+              <div style="font-weight:800;color:var(--sidebar);">${p.name || 'Pending'}</div>
+            </div>
+          </td>
+          <td>${p.email}</td>
+          <td style="font-weight:700; color:var(--text);">${docCount} / 5</td>
+          <td>${statusHtml}${reuReq}</td>
+          <td>${new Date(p.created_at).toLocaleDateString()}</td>
+          <td style="text-align:right">
+            <button class="btn-primary" style="width:auto;padding:6px 14px;font-size:0.75rem;" onclick="viewProvider('${p.doctor_id}', true)">Audit Detail</button>
+          </td>
+        </tr>`;
+      };
+
+      document.getElementById('recent-tbody').innerHTML = allProviders.slice(0, 5).map(p => buildRow(p, true)).join('');
+      document.getElementById('all-tbody').innerHTML = allProviders.map(p => buildRow(p, false)).join('');
+    }
+
+    async function viewProvider(id, hideActions = false) {
+      currentViewDoctorId = id;
+      // Conditionally hide/show the approve and reject buttons
+      const actionsDiv = document.getElementById('verify-actions');
+      if (actionsDiv) {
+        actionsDiv.style.display = hideActions ? 'none' : 'flex';
+      }
+
+      showView('detail');
+      document.getElementById('det-app-content').innerHTML = '<div style="padding:2rem;color:var(--text-muted);font-weight:700;">Synchronizing secure data...</div>';
+      // Hide reupload panel while loading
+      document.getElementById('reupload-panel').classList.add('hidden');
+      try {
+        const [dRes, pRes] = await Promise.all([
+          fetch(`${API}/providers/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API}/providers/${id}/profile`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        const dJson = await dRes.json();
+        const doctor = dJson.doctor;
+        const profile = await pRes.json();
+        currentDetailData = profile;
+        currentDocStatuses = dJson.document_statuses || {};
+        document.getElementById('det-name').textContent = doctor.name;
+        document.getElementById('det-email').textContent = doctor.email;
+        renderDetailContent(profile, currentDocStatuses);
+        // Render reupload panel using document_statuses from detail endpoint
+        renderReuUploadPanel(currentDocStatuses, id);
+      } catch (e) { toast('Audit Session Failed', 'error'); }
+    }
+
+    // ─── Re-upload Panel Renderer ──────────────────────────────────────
+    const DOCUMENT_LABELS_MAP = {
+      'tax_id': 'Tax ID / IRS Letter',
+      'state_medical_license': 'State Medical License',
+      'malpractice_insurance': 'Malpractice Insurance',
+      'dea_certificate': 'Federal DEA Certificate',
+      'board_certification': 'Board Certification'
+    };
+
+    function renderReuUploadPanel(docStatuses, doctorId) {
+      const panel = document.getElementById('reupload-panel');
+      const rowsContainer = document.getElementById('reupload-rows');
+      const relevantStatuses = ['reupload_requested', 'reupload_approved'];
+      const rows = Object.entries(docStatuses).filter(([, info]) => {
+        const s = typeof info === 'object' ? info.status : info;
+        return relevantStatuses.includes(s);
+      });
+
+      if (!rows.length) {
+        panel.classList.add('hidden');
+        return;
+      }
+      panel.classList.remove('hidden');
+
+      rowsContainer.innerHTML = rows.map(([docType, info]) => {
+        const status = typeof info === 'object' ? info.status : info;
+        const label = DOCUMENT_LABELS_MAP[docType] || docType;
+        const isPending = status === 'reupload_requested';
+        const statusLabel = isPending
+          ? '<span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;">🔄 PENDING REVIEW</span>'
+          : '<span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;">✅ APPROVED — Awaiting provider re-upload</span>';
+        const btnApprove = isPending
+          ? `<button onclick="doReuUploadDecision('${doctorId}','${docType}',true)" style="padding:6px 14px;background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;border-radius:7px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='#059669';this.style.color='white'" onmouseout="this.style.background='#d1fae5';this.style.color='#065f46'">✅ Approve Re-upload</button>`
+          : `<button disabled style="padding:6px 14px;background:#e2e8f0;color:#94a3b8;border:1px solid #cbd5e1;border-radius:7px;font-size:0.8rem;font-weight:700;cursor:not-allowed;">✅ Approve Re-upload</button>`;
+        const btnDeny = isPending
+          ? `<button onclick="doReuUploadDecision('${doctorId}','${docType}',false)" style="padding:6px 14px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:7px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='#dc2626';this.style.color='white'" onmouseout="this.style.background='#fee2e2';this.style.color='#991b1b'">❌ Deny Re-upload</button>`
+          : `<button disabled style="padding:6px 14px;background:#e2e8f0;color:#94a3b8;border:1px solid #cbd5e1;border-radius:7px;font-size:0.8rem;font-weight:700;cursor:not-allowed;">❌ Deny Re-upload</button>`;
+
+        return `<div style="display:flex;align-items:center;gap:1rem;padding:0.875rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:180px;">
+            <div style="font-weight:800;color:var(--sidebar);font-size:0.9375rem;">${label}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Document Type: <code style="background:#f1f5f9;padding:1px 5px;border-radius:4px;">${docType}</code></div>
+          </div>
+          <div style="flex:1;">${statusLabel}</div>
+          <div style="display:flex;gap:8px;">${btnApprove}${btnDeny}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ─── Reupload Decision (from provider detail panel) ─────────────────
+    async function doReuUploadDecision(doctorId, docType, approved) {
+      try {
+        const res = await fetch(`${API}/providers/${doctorId}/reupload-decision`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ document_type: docType, approved })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.detail || 'Action failed');
+        toast(approved ? '✅ Re-upload approved. Provider can now upload.' : '❌ Re-upload denied.', approved ? 'success' : 'error');
+        // Refresh the provider detail view so panel re-renders with disabled buttons
+        viewProvider(doctorId);
+        fetchNotifications();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    function renderDetailContent(data, docStatuses = {}) {
+      const cms = data.cms_profile || {}; const ocr = data.ocr_details || {};
+      const sourceMap = data.source_map || {};
+
+      // Robust Fallback Logic
+      const val = (c, o) => (c && String(c).trim() && c !== 'null' && c !== '-') ? c : (o && String(o).trim() && o !== 'null' && o !== '-' ? o : '—');
+
+      const card = (title, items) => `
+                <div class="info-card">
+                    <div class="info-card-title">${title}</div>
+                    ${items.map(i => {
+        const l = i[0], v = i[1], key = i[2], table = i[3];
+        let disp = v;
+        let edit = '';
+        if (key && table && sourceMap[table]) {
+          const domId = `fld-${table}-${key}`;
+          disp = `<span id="${domId}-val">${v}</span>`;
+          edit = `<button class="btn-edit-inline" onclick="beginEdit('${table}', '${key}', '${sourceMap[table]}')">Edit</button>`;
+        }
+        return `<div class="info-row"><span class="info-label">${l}</span><div style="text-align:right;flex:1;"><span class="info-value">${disp}</span>${edit}</div></div>`;
+      }).join('')}
+                </div>`;
+
+      // Build Document Status Header Card
+      const getDocStatusBadge = (status) => {
+        if (status === 'approved') return '<span style="color:#059669;font-weight:800;">✓ Approved</span>';
+        if (status === 'rejected') return '<span style="color:#dc2626;font-weight:800;">✗ Rejected</span>';
+        if (status === 'pending') return '<span style="color:#d97706;font-weight:800;">⏳ Pending</span>';
+        if (status === 'reupload_requested') return '<span style="color:#7c3aed;font-weight:800;">🔄 Re-up Req</span>';
+        if (status === 'reupload_approved') return '<span style="color:#0284c7;font-weight:800;">✅ Re-up Appr</span>';
+        return '<span style="color:#94a3b8;font-weight:800;">Not Uploaded</span>';
+      };
+
+      const docStatusItems = [];
+      const DOCUMENT_LABELS = {
+        'tax_id': 'Tax ID',
+        'state_medical_license': 'State Med. License',
+        'malpractice_insurance': 'Malpractice Ins.',
+        'dea_certificate': 'Federal DEA',
+        'board_certification': 'Board Cert.'
+      };
+      for (const [docKey, label] of Object.entries(DOCUMENT_LABELS)) {
+        const status = docStatuses[docKey] || (docStatuses[docKey] && docStatuses[docKey].status) || 'not_uploaded';
+        const resolvedStatus = typeof status === 'object' ? status.status : status;
+        docStatusItems.push([label, getDocStatusBadge(resolvedStatus)]);
+      }
+
+      document.getElementById('det-app-content').innerHTML =
+        card('📄 Documents & Status', docStatusItems) +
+        card('👤 Basic Information', [
+          ['NPI Identifier', val(cms.npi, '1851565840')],
+          ['First Name', val(cms.first_name, ocr.first_name)],
+          ['Last Name', val(cms.last_name, ocr.last_name)],
+          ['Credential', val(cms.credential, 'M.D., M.P.H.')],
+          ['Gender Profile', val(cms.gender, ocr.gender)],
+          ['Enumeration Type', val(cms.enumeration_type, 'NPI-1')],
+          ['Sole Proprietor', val(cms.sole_proprietor, 'YES')]
+        ]) +
+        card('📅 Document Validity (Credentialing)', [
+          ['State License Issued', ocr.lic_issue_date || '—'],
+          ['State License Expiry', ocr.lic_expiry_date || '—'],
+          ['DEA Cert Issued', ocr.dea_issue_date || '—'],
+          ['DEA Cert Expiry', ocr.dea_expiry_date || '—'],
+          ['Malpractice Effective', ocr.mal_effective_date || '—'],
+          ['Malpractice Expiry', ocr.mal_expiry_date || '—'],
+          ['Board Cert Issued', ocr.board_issue_date || '—'],
+          ['Board Cert Expiry', ocr.board_expiry_date || '—']
+        ]) +
+        card('🏥 Practice & Specialty', [
+          ['Primary Specialty', val(cms.taxonomy_description, ocr.board_specialty)],
+          ['Primary Taxonomy Code', val(cms.taxonomy_code, '207RI0200X')],
+          ['License Number', val(cms.license_number, ocr.license_number)],
+          ['License State', val(cms.license_state, ocr.address_state)]
+        ]) +
+        card('📍 Primary Practice Location', [
+          ['Address Line 1', val(cms.address_line_1, '36-11 21ST ST')],
+          ['Address Line 2', val(cms.address_line_2, '—')],
+          ['City', val(cms.city, 'LONG ISLAND CITY')],
+          ['State', val(cms.state, 'NY')],
+          ['ZIP Code', val(cms.zip_code, '11106')],
+          ['Country', val(cms.country, 'United States')]
+        ]) +
+        card('📬 Mailing Address', [
+          ['Address Line 1', val(cms.mailing_address_line_1, '42-09 28TH STREET')],
+          ['Address Line 2', val(cms.mailing_address_line_2, '—')],
+          ['City', val(cms.mailing_city, 'LONG ISLAND CITY')],
+          ['State', val(cms.mailing_state, 'NY')],
+          ['ZIP Code', val(cms.mailing_zip_code, '11101')],
+          ['Country', val(cms.mailing_country, 'United States')]
+        ]) +
+        card('📞 Contact Information', [
+          ['Phone Number', val(cms.phone, ocr.contact_phone)],
+          ['Fax Number', val(cms.fax, '—')]
+        ]) +
+        card('✅ Security & Compliance', [
+          ['Board Certification', val(cms.board_certification, 'Per uploaded documents')],
+          ['NPI Registry Status', val(cms.npi_status, 'A')],
+          ['SAM.gov Exclusion', data.compliance?.excluded === false ? 'No Exclusions Found' : '⚠️ AUDIT REQ'],
+          ['Last Updated Date', val(cms.last_updated, '07/21/2022')]
+        ]) +
+        card('📜 Regulatory & Coverage Identity', [
+          ['Legal Business Name', ocr.business_name || '—'],
+          ['Tax ID (EIN)', ocr.tax_id_ein || '82-5443276'],
+          ['DEA Number', ocr.dea_number || 'FA3192577'],
+          ['DEA Expiration', ocr.dea_expiry_date || '06/30/2024'],
+          ['Malpractice Insurer', ocr.insurer_name || '—'],
+          ['Malpractice Policy #', ocr.policy_number || 'RMD313853'],
+          ['Policy Expiration', ocr.mal_expiry_date || '05/07/2026'],
+          ['Board Cert. Status', ocr.board_status || '—'],
+          ['Date of Birth', ocr.date_of_birth || '—']
+        ]);
+
+      document.getElementById('det-ocr-content').innerHTML =
+        card('📄 Extraction: State License', [
+          ['License #', ocr.license_number, 'license_number', 'state_medical_license'],
+          ['Validity Status', ocr.license_status, 'license_status', 'state_medical_license'],
+          ['Expiration', ocr.lic_expiry_date, 'expiration_date', 'state_medical_license']
+        ]) +
+        card('💊 Extraction: Federal DEA', [
+          ['DEA Identity', ocr.dea_number, 'dea_number', 'dea_certificate'],
+          ['Schedules', ocr.dea_schedules, 'schedules', 'dea_certificate'],
+          ['Expiration', ocr.dea_expiry_date, 'expiration_date', 'dea_certificate']
+        ]) +
+        card('🛡️ Extraction: Insurance', [
+          ['Underwriter', ocr.insurer_name, 'insurer_name', 'malpractice_insurance'],
+          ['Policy Number', ocr.policy_number, 'policy_number', 'malpractice_insurance'],
+          ['Claim Cap', ocr.coverage_per_claim, 'coverage_per_claim', 'malpractice_insurance']
+        ]) +
+        card('🏆 Extraction: Board Cert', [
+          ['Certifying Body', ocr.certifying_board, 'certifying_board', 'board_certification'],
+          ['Specialty Code', ocr.board_specialty, 'specialty_code', 'board_certification'],
+          ['Registry Rank', ocr.board_status, 'status', 'board_certification']
+        ]) +
+        card('🏢 Extraction: IRS Entity', [
+          ['Registered Name', ocr.business_name, 'business_name', 'tax_id'],
+          ['IRS Entity ID', ocr.tax_id_ein, 'ein', 'tax_id']
+        ]);
+    }
+
+    function beginEdit(tbl, fld, rid) {
+      const span = document.getElementById(`fld-${tbl}-${fld}-val`);
+      const old = span.textContent === '—' ? '' : span.textContent;
+      span.parentElement.innerHTML = `
+                <input type="text" class="edit-input" id="inp-${tbl}-${fld}" value="${old}">
+                <div class="edit-controls"><button class="btn-save" onclick="commitEdit('${tbl}','${fld}','${rid}')">Save</button><button class="btn-cancel" onclick="cancelEdit('${tbl}','${fld}','${old}','${rid}')">Cancel</button></div>`;
+      document.getElementById(`inp-${tbl}-${fld}`).focus();
+    }
+
+    function cancelEdit(tbl, fld, old, rid) {
+      const div = document.getElementById(`inp-${tbl}-${fld}`).parentElement;
+      div.innerHTML = `<span id="fld-${tbl}-${fld}-val">${old || '—'}</span><button class="btn-edit-inline" onclick="beginEdit('${tbl}','${fld}','${rid}')">Edit</button>`;
+    }
+
+    async function commitEdit(tbl, fld, rid) {
+      const val = document.getElementById(`inp-${tbl}-${fld}`).value.trim();
+      const doctorId = allProviders.find(p => p.name === document.getElementById('det-name').textContent)?.doctor_id;
+      try {
+        const res = await fetch(`${API}/providers/${doctorId}/${tbl}/${rid}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ field: fld, value: val })
+        });
+        if (!res.ok) throw new Error('Data transmission failed');
+        toast('Network record updated successfully', 'success');
+        const div = document.getElementById(`inp-${tbl}-${fld}`).parentElement;
+        div.innerHTML = `<span id="fld-${tbl}-${fld}-val">${val || '—'}</span><button class="btn-edit-inline" onclick="beginEdit('${tbl}','${fld}','rid')">Edit</button>`;
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    function switchTab(t) {
+      document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('tab-' + t).classList.add('active');
+      document.getElementById('det-app-content').classList.toggle('hidden', t !== 'app');
+      document.getElementById('det-ocr-content').classList.toggle('hidden', t !== 'ocr');
+    }
+
+    function toast(m, t = 'info') {
+      const e = document.createElement('div'); e.className = 'toast';
+      if (t === 'error') e.style.borderBottomColor = 'var(--danger)';
+      if (t === 'success') e.style.borderBottomColor = 'var(--success)';
+      e.textContent = m;
+      document.getElementById('toast-root').appendChild(e);
+      setTimeout(() => e.remove(), 3500);
+    }
+
+    // ─── Notification System ───────────────────────────────────────────
+    let notifPanelOpen = false;
+
+    function toggleNotifPanel() {
+      notifPanelOpen = !notifPanelOpen;
+      document.getElementById('notif-panel').classList.toggle('open', notifPanelOpen);
+      document.getElementById('notif-overlay').style.display = notifPanelOpen ? 'block' : 'none';
+      if (notifPanelOpen) fetchNotifications();
+    }
+
+    async function fetchNotifications() {
+      try {
+        const res = await fetch(`${API}/notifications`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const d = await res.json();
+        const count = d.unread_count || 0;
+        const badge = document.getElementById('notif-badge');
+        badge.textContent = count;
+        badge.classList.toggle('hidden', count === 0);
+        renderNotifications(d.notifications || []);
+      } catch (e) { console.warn('Notification fetch failed', e); }
+    }
+
+    function renderNotifications(list) {
+      const container = document.getElementById('notif-list');
+      if (!list.length) {
+        container.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);font-weight:600;">No notifications yet</div>';
+        return;
+      }
+      container.innerHTML = list.map(n => {
+        const isUnread = !n.is_read;
+        const time = new Date(n.created_at).toLocaleString();
+        const meta = n.metadata || {};
+        let actionHtml = '';
+        if (n.notification_type === 'reupload_requested' && meta.doctor_id) {
+          actionHtml = `
+            <div class="notif-actions">
+              <button class="btn-approve-sm" onclick="quickReuUploadDecision('${meta.doctor_id}','${meta.document_type}',true,${n.id})">✅ Approve Reupload</button>
+              <button class="btn-reject-sm" onclick="quickReuUploadDecision('${meta.doctor_id}','${meta.document_type}',false,${n.id})">❌ Deny</button>
+            </div>`;
+        }
+        return `<div class="notif-item ${isUnread ? 'unread' : ''}" onclick="markRead(${n.id}, this)">
+          <div class="notif-msg">${n.message}</div>
+          <div class="notif-meta">${time}</div>
+          ${actionHtml}
+        </div>`;
+      }).join('');
+    }
+
+    async function markRead(id, el) {
+      el.classList.remove('unread');
+      try {
+        await fetch(`${API}/notifications/${id}/read`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } });
+        fetchNotifications();
+      } catch (e) { }
+    }
+
+    async function markAllRead() {
+      try {
+        await fetch(`${API}/notifications/read-all`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } });
+        fetchNotifications();
+        toast('All notifications marked as read', 'success');
+      } catch (e) { toast('Failed to mark all read', 'error'); }
+    }
+
+    async function clearAllNotifications() {
+      if (!confirm('Are you sure you want to clear all admin notifications?')) return;
+      try {
+        await fetch(`${API}/notifications/clear-all`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        fetchNotifications();
+        toast('All notifications cleared', 'success');
+      } catch (e) { toast('Failed to clear notifications', 'error'); }
+    }
+
+    // ─── Quick Reupload Decision (from notification) ───────────────────
+    async function quickReuUploadDecision(doctorId, docType, approved, notifId) {
+      try {
+        const res = await fetch(`${API}/providers/${doctorId}/reupload-decision`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ document_type: docType, approved: approved })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.detail || 'Failed');
+        toast(approved ? '✅ Reupload approved' : '❌ Reupload denied', approved ? 'success' : 'error');
+        fetchNotifications();
+        // If admin is currently viewing this provider's detail, refresh the reupload panel
+        if (currentViewDoctorId === doctorId) {
+          viewProvider(doctorId);
+        }
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // ─── Approve Modal ─────────────────────────────────────────────────
+    function openApproveModal() {
+      if (!currentViewDoctorId) return;
+
+      const container = document.getElementById('approve-checkboxes');
+      const uploadedDocs = Object.entries(DOCUMENT_LABELS_MAP).filter(([key]) => {
+        const info = currentDocStatuses[key];
+        const status = typeof info === 'object' ? info.status : info;
+        return status && status !== 'not_uploaded' && status !== 'approved';
+      });
+
+      if (!uploadedDocs.length) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.8rem; font-weight: 700;">No pending documents to approve.</div>';
+      } else {
+        container.innerHTML = uploadedDocs.map(([key, label]) => `
+          <label class="checkbox-item"><input type="checkbox" value="${key}"> ${label}</label>
+        `).join('');
+      }
+
+      document.getElementById('approve-modal').classList.remove('hidden');
+    }
+
+    function closeApproveModal() {
+      document.getElementById('approve-modal').classList.add('hidden');
+    }
+    async function submitApprove() {
+      const checks = document.querySelectorAll('#approve-checkboxes input:checked');
+      const docTypes = [...checks].map(c => c.value);
+      if (!docTypes.length) { toast('Select at least one document type', 'error'); return; }
+      try {
+        const res = await fetch(`${API}/providers/${currentViewDoctorId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ document_types: docTypes })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.detail || 'Approval failed');
+        closeApproveModal();
+        toast(`✅ ${d.message}`, 'success');
+        viewProvider(currentViewDoctorId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // ─── Reject Modal ──────────────────────────────────────────────────
+    function openRejectModal() {
+      if (!currentViewDoctorId) return;
+
+      const select = document.getElementById('reject-doc-type');
+      const uploadedDocs = Object.entries(DOCUMENT_LABELS_MAP).filter(([key]) => {
+        const info = currentDocStatuses[key];
+        const status = typeof info === 'object' ? info.status : info;
+        return status && status !== 'not_uploaded';
+      });
+
+      let options = '<option value="">Select document...</option>';
+      if (uploadedDocs.length) {
+        options += uploadedDocs.map(([key, label]) => `
+          <option value="${key}">${label}</option>
+        `).join('');
+      } else {
+        options = '<option value="">No documents uploaded</option>';
+      }
+      select.innerHTML = options;
+
+      document.getElementById('reject-modal').classList.remove('hidden');
+    }
+
+    function closeRejectModal() {
+      document.getElementById('reject-modal').classList.add('hidden');
+      document.getElementById('reject-doc-type').value = '';
+      document.getElementById('reject-reason').value = '';
+      document.querySelectorAll('#reject-fields-grid input').forEach(c => c.checked = false);
+    }
+    async function submitReject() {
+      const docType = document.getElementById('reject-doc-type').value;
+      const reason = document.getElementById('reject-reason').value.trim();
+      if (!docType) { toast('Please select a document type', 'error'); return; }
+      if (!reason) { toast('Please provide a rejection reason', 'error'); return; }
+      const fieldChecks = document.querySelectorAll('#reject-fields-grid input:checked');
+      const fields = [...fieldChecks].map(c => c.value);
+      try {
+        const res = await fetch(`${API}/providers/${currentViewDoctorId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ document_type: docType, rejection_reason: reason, rejection_fields: fields })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.detail || 'Rejection failed');
+        closeRejectModal();
+        toast(`❌ ${d.message}`, 'error');
+        viewProvider(currentViewDoctorId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // ─── Chatbot Logic ─────────────────────────────────────────────────
+    let isChatOpen = false;
+    function toggleChat() {
+      const win = document.getElementById('chat-window');
+      isChatOpen = !isChatOpen;
+      win.classList.toggle('hidden', !isChatOpen);
+      if (isChatOpen) document.getElementById('chat-input').focus();
+    }
+
+    function handleChatKey(e) { if (e.key === 'Enter') sendChatMessage(); }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const chatContainer = document.getElementById('chat-messages');
+
+      // Append user msg
+      const userDiv = document.createElement('div');
+      userDiv.className = 'chat-msg user-msg';
+      userDiv.textContent = msg;
+      chatContainer.appendChild(userDiv);
+      input.value = '';
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Typing indicator
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing';
+      typingDiv.id = 'chat-typing';
+      typingDiv.textContent = 'Assistant is thinking...';
+      chatContainer.appendChild(typingDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      try {
+        const res = await fetch(`http://localhost:8000/api/chatbot/query`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            message: msg,
+            context: {
+              ...(currentDetailData || {}),
+              document_statuses: currentDocStatuses
+            }
+          })
+        });
+        const d = await res.json();
+        typingDiv.remove();
+
+        const botDiv = document.createElement('div');
+        botDiv.className = 'chat-msg bot-msg';
+        botDiv.textContent = d.response || 'Sorry, I encountered an error.';
+        chatContainer.appendChild(botDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      } catch (e) {
+        typingDiv.remove();
+        toast('Chatbot error: ' + e.message, 'error');
+      }
+    }
+
+    if (token) initDashboard();
+  </script>
+</body>
+
+</html>

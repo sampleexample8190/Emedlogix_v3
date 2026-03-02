@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credentialing AI Engine - DEMO MODE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .demo-badge {
+            background: #fbbf24;
+            color: #78350f;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 32px;
+        }
+
+        .left-panel,
+        .right-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .doc-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .doc-card:hover {
+            border-color: #667eea;
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .doc-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: white;
+        }
+
+        .badge-tx {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .badge-md {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .badge-in {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .badge-de {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .badge-bc {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-ready {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .doc-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .doc-filename {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-run {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .form-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input {
+            padding: 10px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .form-input:read-only {
+            background: #f3f4f6;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #dbeafe;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .json-viewer {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-card">
+            <div class="header-left">
+                <div class="logo">+</div>
+                <div class="header-title">Credentialing AI Engine</div>
+                <div class="demo-badge">🧪 DEMO MODE</div>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="left-panel">
+                <div class="section-title">Sample Documents</div>
+                <div class="section-desc">Pre-loaded OCR data for testing</div>
+
+                <div id="doc-container"></div>
+
+                <button class="btn-run" id="run-demo">Run Demo Matching</button>
+                <div class="progress-text" id="progress-text"></div>
+            </div>
+
+            <div class="right-panel" style="max-height: 600px; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <div class="section-title">Application Form</div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span id="form-status-text">Ready to Process</span>
+                    </div>
+                </div>
+                <div class="section-desc">Provider information auto-filled from CMS NPI Registry</div>
+
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-top: 24px; margin-bottom: 12px;">
+                    Basic Information</div>
+
+                <div class="form-grid single">
+                    <div class="form-field">
+                        <label class="form-label">NPI Number</label>
+                        <input type="text" class="form-input" id="form-npi" readonly
+                            placeholder="Will be fetched from CMS">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-input" id="form-first" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-input" id="form-last" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Credential</label>
+                        <input type="text" class="form-input" id="form-credential" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Gender</label>
+                        <input type="text" class="form-input" id="form-gender" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Enumeration Type</label>
+                        <input type="text" class="form-input" id="form-enum-type" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Sole Proprietor</label>
+                        <input type="text" class="form-input" id="form-sole" readonly>
+                    </div>
+                </div>
+
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-top: 24px; margin-bottom: 12px;">
+                    Practice & Specialty</div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Primary Specialty</label>
+                        <input type="text" class="form-input" id="form-specialty" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Primary Taxonomy Code</label>
+                        <input type="text" class="form-input" id="form-taxonomy" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid single">
+                    <div class="form-field">
+                        <label class="form-label">License Number</label>
+                        <input type="text" class="form-input" id="form-license" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid single">
+                    <div class="form-field">
+                        <label class="form-label">License State</label>
+                        <input type="text" class="form-input" id="form-license-state" readonly>
+                    </div>
+                </div>
+
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-top: 24px; margin-bottom: 12px;">
+                    Primary Practice Location</div>
+
+                <div class="form-grid single">
+                    <div class="form-field">
+                        <label class="form-label">Address Line 1</label>
+                        <input type="text" class="form-input" id="form-address1" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid single">
+                    <div class="form-field">
+                        <label class="form-label">Address Line 2</label>
+                        <input type="text" class="form-input" id="form-address2" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-input" id="form-city" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">State</label>
+                        <input type="text" class="form-input" id="form-state" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">ZIP Code</label>
+                        <input type="text" class="form-input" id="form-zip" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-input" id="form-country" readonly>
+                    </div>
+                </div>
+
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-top: 24px; margin-bottom: 12px;">
+                    Contact Information</div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-input" id="form-phone" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Fax</label>
+                        <input type="text" class="form-input" id="form-fax" readonly>
+                    </div>
+                </div>
+
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-top: 24px; margin-bottom: 12px;">
+                    Certifications & Status</div>
+
+                <div class="form-grid single">
+                    <div class="form-field">
+                        <label class="form-label">Board Certification</label>
+                        <input type="text" class="form-input" id="form-board-cert" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label">NPI Status</label>
+                        <input type="text" class="form-input" id="form-status" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Last Updated</label>
+                        <input type="text" class="form-input" id="form-last-updated" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="jsonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Document Data</div>
+                <div class="modal-close" onclick="closeModal()">&times;</div>
+            </div>
+            <pre class="json-viewer" id="jsonContent"></pre>
+        </div>
+    </div>
+
+    <script src="ocr_data.js"></script>
+    <script src="ocr_transformer.js"></script>
+    <script>
+        const API_URL = "http://localhost:8000/api/provider/auto-fill";
+
+        const documents = [
+            { id: 'tax', name: 'Tax ID / IRS Letter', badge: 'TX', badgeClass: 'badge-tx' },
+            { id: 'license', name: 'State Medical License', badge: 'MD', badgeClass: 'badge-md' },
+            { id: 'malpractice', name: 'Malpractice Coverage', badge: 'IN', badgeClass: 'badge-in' },
+            { id: 'dea', name: 'Federal DEA', badge: 'DE', badgeClass: 'badge-de' },
+            { id: 'board', name: 'Board Certification', badge: 'BC', badgeClass: 'badge-bc' }
+        ];
+
+        function init() {
+            const container = document.getElementById('doc-container');
+            documents.forEach(doc => {
+                const card = document.createElement('div');
+                card.className = 'doc-card';
+                card.innerHTML = `
+                    <div class="doc-header">
+                        <div class="doc-badge ${doc.badgeClass}">${doc.badge}</div>
+                        <div class="status-badge status-ready">READY</div>
+                    </div>
+                    <div class="doc-title">${doc.name}</div>
+                    <div class="doc-filename">Sample data loaded</div>
+                    <button class="btn btn-primary" onclick="viewData('${doc.id}')">View OCR Data</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function runDemo() {
+            const btn = document.getElementById('run-demo');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            document.getElementById('form-status-text').textContent = 'Matching Provider...';
+
+            // Simulate processing delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Transform all OCR data
+            const allData = {};
+            for (const [docId, docData] of Object.entries(ocrData)) {
+                const transformed = transformOCRResponse(docData);
+                console.log(`Transformed ${docId}:`, transformed);
+                Object.assign(allData, transformed);
+            }
+
+            console.log('Combined transformed data:', allData);
+            document.getElementById('progress-text').textContent = 'Sending to CMS for matching...';
+
+            // Send to backend for matching
+            try {
+                const payload = {
+                    ocr_payload: {
+                        npi: allData.npi || "",
+                        license_number: allData.license_number || "",
+                        first_name: allData.first_name || "",
+                        last_name: allData.last_name || "",
+                        state: allData.state || "",
+                        city: allData.city || "",
+                        zip_code: allData.zip_code || "",
+                        tax_id: allData.tax_id || "",
+                        dea_number: allData.dea_number || "",
+                        malpractice_policy: allData.malpractice_policy || "",
+                        board_certification: allData.board_certification || "",
+                        training_certifications: []
+                    }
+                };
+
+                console.log('Sending to backend:', payload);
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                console.log('Backend response:', result);
+
+                if (result.status === 'success' && result.provider_profile) {
+                    fillFormWithProfile(result.provider_profile);
+                    document.getElementById('form-status-text').textContent = '✅ Verified';
+                    document.getElementById('progress-text').textContent = 'Match found! Form auto-filled.';
+                } else {
+                    fillFormWithTransformed(allData);
+                    document.getElementById('form-status-text').textContent = '⚠️ Manual Review Required';
+                    document.getElementById('progress-text').textContent = result.reason || 'No exact match found';
+                }
+            } catch (error) {
+                console.error('Matching error:', error);
+                fillFormWithTransformed(allData);
+                document.getElementById('form-status-text').textContent = '❌ Error';
+                document.getElementById('progress-text').textContent = 'Error connecting to backend';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Run Demo Again';
+        }
+
+        function fillFormWithProfile(profile) {
+            console.log('Filling form with CMS profile:', profile);
+
+            document.getElementById('form-npi').value = profile.npi || '';
+            document.getElementById('form-first').value = profile.first_name || '';
+            document.getElementById('form-last').value = profile.last_name || '';
+            document.getElementById('form-credential').value = profile.credential || '';
+            document.getElementById('form-gender').value = profile.gender || '';
+            document.getElementById('form-enum-type').value = profile.enumeration_type || '';
+            document.getElementById('form-sole').value = profile.sole_proprietor || '';
+
+            document.getElementById('form-specialty').value = profile.taxonomy_description || '';
+            document.getElementById('form-taxonomy').value = profile.taxonomy_code || '';
+            document.getElementById('form-license').value = profile.license_number || '';
+            document.getElementById('form-license-state').value = profile.license_state || '';
+
+            const primaryAddress = profile.addresses?.[0] || {};
+            document.getElementById('form-address1').value = primaryAddress.address_1 || '';
+            document.getElementById('form-address2').value = primaryAddress.address_2 || '';
+            document.getElementById('form-city').value = primaryAddress.city || '';
+            document.getElementById('form-state').value = primaryAddress.state || '';
+            document.getElementById('form-zip').value = primaryAddress.postal_code || '';
+            document.getElementById('form-country').value = primaryAddress.country_name || 'United States';
+
+            document.getElementById('form-phone').value = primaryAddress.telephone_number || '';
+            document.getElementById('form-fax').value = primaryAddress.fax_number || '';
+
+            document.getElementById('form-board-cert').value = profile.board_certification || 'Per uploaded documents';
+            document.getElementById('form-status').value = profile.status || 'Active';
+            document.getElementById('form-last-updated').value = profile.last_updated || '';
+        }
+
+        function fillFormWithTransformed(data) {
+            console.log('Filling form with transformed OCR data:', data);
+
+            document.getElementById('form-npi').value = data.npi || 'Not Found - Manual Entry Required';
+            document.getElementById('form-first').value = data.first_name || '';
+            document.getElementById('form-last').value = data.last_name || '';
+            document.getElementById('form-credential').value = 'MD';
+            document.getElementById('form-gender').value = data.gender || '';
+            document.getElementById('form-enum-type').value = 'NPI-1 (Individual)';
+            document.getElementById('form-sole').value = data.sole_proprietor || 'Unknown';
+
+            document.getElementById('form-specialty').value = data.board_certification || data.specialty || '';
+            document.getElementById('form-taxonomy').value = data.taxonomy_code || '';
+            document.getElementById('form-license').value = data.license_number || '';
+            document.getElementById('form-license-state').value = data.state || '';
+
+            document.getElementById('form-address1').value = data.address_line_1 || '';
+            document.getElementById('form-address2').value = data.address_line_2 || '';
+            document.getElementById('form-city').value = data.city || '';
+            document.getElementById('form-state').value = data.state || '';
+            document.getElementById('form-zip').value = data.zip_code || '';
+            document.getElementById('form-country').value = 'United States';
+
+            document.getElementById('form-phone').value = data.phone || '';
+            document.getElementById('form-fax').value = data.fax || '';
+
+            document.getElementById('form-board-cert').value = data.board_certification || 'Per uploaded documents';
+            document.getElementById('form-status').value = 'Pending Verification';
+            document.getElementById('form-last-updated').value = new Date().toLocaleDateString();
+        }
+
+        function viewData(docId) {
+            const modal = document.getElementById('jsonModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('jsonContent');
+
+            const docNames = {
+                'tax': 'Tax ID / IRS Letter',
+                'license': 'State Medical License',
+                'malpractice': 'Malpractice Coverage',
+                'dea': 'Federal DEA',
+                'board': 'Board Certification'
+            };
+
+            title.textContent = `${docNames[docId]} - Sample OCR Data`;
+            content.textContent = JSON.stringify(ocrData[docId], null, 2);
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('jsonModal').classList.remove('active');
+        }
+
+        document.getElementById('jsonModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.getElementById('run-demo').addEventListener('click', runDemo);
+
+        init();
+    </script>
+</body>
+
+</html>
