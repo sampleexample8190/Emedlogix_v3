@@ -40,6 +40,7 @@ Schema:
 {
   "document_type": "state_medical_license",
   "license_number": "string",
+  "npi_number": "string (10-digit if found)",
   "provider_name": "string",
   "first_name": "string",
   "last_name": "string",
@@ -71,6 +72,7 @@ Schema:
 {
   "document_type": "dea_certificate",
   "dea_number": "string (XX#######)",
+  "npi_number": "string (10-digit if found)",
   "provider_name": "string",
   "first_name": "string",
   "last_name": "string",
@@ -255,7 +257,8 @@ class OCRService:
 
             headers = {
                 "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-wait-for-model": "true"
             }
 
             print(f"🤖 Calling HF Inference API with {MODEL_NAME}...")

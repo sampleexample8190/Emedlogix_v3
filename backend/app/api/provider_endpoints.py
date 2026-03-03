@@ -423,12 +423,31 @@ async def get_my_profile(
         except Exception as ex:
             print(f"⚠️ Live Fetch Failed: {ex}")
 
-    # Prepare detailed OCR dictionary for AI and Frontend Form Filling
+    # Prepare NPI: Try mapped field first, then raw 'number' from CMS, then document fallback
+    npi_val = None
+    if cms_profile:
+        npi_val = cms_profile.get("npi") or cms_profile.get("number")
+    
+    # Fallback: Check if NPI exists in any document's raw OCR (some docs have it)
+    if not npi_val:
+        for table_name, doc_row in docs.items():
+            if doc_row and doc_row.get("raw_ocr_json"):
+                try:
+                    raw_data = doc_row["raw_ocr_json"]
+                    if isinstance(raw_data, str):
+                        raw_data = json.loads(raw_data)
+                    npi_cand = raw_data.get("npi") or raw_data.get("npi_number")
+                    if npi_cand:
+                        npi_val = str(npi_cand)
+                        break
+                except:
+                    continue
+
     ocr_details = {
         "first_name":           raw_first,
         "last_name":            raw_last,
         "full_name":            doctor_name,
-        "npi":                  cms_profile.get("npi") if cms_profile else None,
+        "npi":                  npi_val,
         "taxonomy_code":        cms_profile.get("taxonomy_code") if cms_profile else None,
         "specialty":            first_val(board.get("specialty_code") if board else None, cms_profile.get("taxonomy_description") if cms_profile else None),
         # State Medical License
