@@ -1313,3 +1313,109 @@ async def update_verification_cache(doctor_id: str):
     finally:
         cur.close()
         conn.close()
+
+
+# ─── Chatbot: Provider-Scoped DB Helpers ──────────────────────────────────────
+# All functions below filter strictly by doctor_id so each provider only
+# ever sees their own data, regardless of which provider is logged in.
+
+def get_document_statuses(doctor_id: str) -> Dict[str, Dict]:
+    """Return all document status rows for a doctor, keyed by document_type.
+    Used by the chatbot to report approved/rejected/pending counts."""
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cur.execute(
+            f"SELECT * FROM {SCHEMA}.document_status WHERE doctor_id = %s",
+            (doctor_id,)
+        )
+        rows = cur.fetchall()
+        result = {}
+        for row in rows:
+            r = dict(row)
+            doc_type = r.pop("document_type", None)
+            if doc_type:
+                result[doc_type] = r
+        return result
+    except Exception as e:
+        logger.error(f"get_document_statuses error: {e}")
+        return {}
+    finally:
+        cur.close()
+        conn.close()
+
+
+def get_cms_provider_data(doctor_id: str) -> Optional[Dict]:
+    """Return the CMS/NPI row for this doctor, or None if not yet matched.
+    Used by the chatbot to report NPI number, practice location, etc."""
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cur.execute(
+            f"SELECT * FROM {SCHEMA}.cms_provider_data WHERE doctor_id = %s LIMIT 1",
+            (doctor_id,)
+        )
+        row = cur.fetchone()
+        return dict(row) if row else None
+    except Exception as e:
+        logger.error(f"get_cms_provider_data error: {e}")
+        return None
+    finally:
+        cur.close()
+        conn.close()
+
+
+def get_provider_identity(doctor_id: str) -> Optional[Dict]:
+    """Return the provider_identity row for this doctor, or None.
+    Holds name, license number, specialty, taxonomy code."""
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cur.execute(
+            f"SELECT * FROM {SCHEMA}.provider_identity WHERE doctor_id = %s LIMIT 1",
+            (doctor_id,)
+        )
+        row = cur.fetchone()
+        return dict(row) if row else None
+    except Exception as e:
+        logger.error(f"get_provider_identity error: {e}")
+        return None
+    finally:
+        cur.close()
+        conn.close()
+
+
+def get_documents_by_doctor(doctor_id: str) -> Dict[str, list]:
+    """Return the latest OCR-extracted rows for every document type for this doctor.
+    Returns a dict keyed by document_type with a list of records (newest first).
+    Used by the chatbot to report license number, DEA, malpractice details, etc."""
+    conn = get_connection()
+    cur  = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    tables = [
+        ("tax_id",               "tax_id"),
+        ("state_medical_license","state_medical_license"),
+        ("malpractice_insurance","malpractice_insurance"),
+        ("dea_certificate",      "dea_certificate"),
+        ("board_certification",  "board_certification"),
+    ]
+
+    result: Dict[str, list] = {}
+    try:
+        for key, table in tables:
+            try:
+                cur.execute(
+                    f"SELECT * FROM {SCHEMA}.{table} WHERE doctor_id = %s ORDER BY uploaded_at DESC LIMIT 1",
+                    (doctor_id,)
+                )
+                rows = cur.fetchall()
+                result[key] = [dict(r) for r in rows]
+            except Exception:
+                result[key] = []
+    except Exception as e:
+        logger.error(f"get_documents_by_doctor error: {e}")
+    finally:
+        cur.close()
+        conn.close()
+
+    return result
