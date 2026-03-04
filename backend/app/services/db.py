@@ -54,9 +54,17 @@ def init_db():
         cur.execute("""
             DO $$ BEGIN
                 CREATE TYPE document_status_enum AS ENUM (
-                    'pending', 'approved', 'rejected', 'reupload_requested'
+                    'pending', 'approved', 'rejected', 'reupload_requested', 'reupload_approved'
                 );
             EXCEPTION WHEN duplicate_object THEN NULL;
+            END $$;
+        """)
+
+        # ── Safe migration: add reupload_approved if this is an existing DB ──
+        cur.execute("""
+            DO $$ BEGIN
+                ALTER TYPE document_status_enum ADD VALUE IF NOT EXISTS 'reupload_approved';
+            EXCEPTION WHEN others THEN NULL;
             END $$;
         """)
 
