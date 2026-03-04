@@ -2,6 +2,7 @@
 .env
 .env.*
 *.env
+backend/.env
 
 # Python
 __pycache__/
@@ -16,6 +17,8 @@ build/
 venv/
 env/
 .venv/
+backend/venv/
+backend/.venv/
 
 # IDE
 .vscode/
@@ -30,3 +33,14 @@ desktop.ini
 
 # Logs
 *.log
+logs/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Uploads / temp
+uploads/
+temp/
+tmp/
