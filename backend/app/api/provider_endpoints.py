@@ -21,7 +21,8 @@ load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env", override=Tru
 
 router = APIRouter(prefix="/provider", tags=["Provider"])
 
-SCHEMA     = "ocr_document"
+SCHEMA     = "provider_credentialing"
+
 JWT_SECRET = os.getenv("JWT_SECRET")
 if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET is not set in .env")
@@ -57,7 +58,8 @@ ADMIN_RECIPIENT_ID = "admin"
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def get_conn():
-    return psycopg2.connect(**DB_CONFIG)
+    config = {**DB_CONFIG, "options": f"-c search_path={SCHEMA},public"}
+    return psycopg2.connect(**config)
 
 
 def _require_provider(authorization: Optional[str]) -> str:

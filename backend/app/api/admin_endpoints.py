@@ -30,7 +30,8 @@ load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env", override=Tru
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 # ─── Config ───────────────────────────────────────────────────────────────────
-SCHEMA      = "ocr_document"
+SCHEMA      = "provider_credentialing"
+
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 ADMIN_PASS  = os.getenv("ADMIN_PASSWORD")
 if not ADMIN_EMAIL or not ADMIN_PASS:
@@ -69,7 +70,8 @@ DB_CONFIG = {
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def get_conn():
-    return psycopg2.connect(**DB_CONFIG)
+    config = {**DB_CONFIG, "options": f"-c search_path={SCHEMA},public"}
+    return psycopg2.connect(**config)
 
 
 def _require_admin(authorization: Optional[str]):
@@ -417,37 +419,37 @@ async def get_provider_profile(
         "first_name":          raw_first,
         "last_name":           raw_last,
         "provider_name":       lic.get("provider_name") if lic else (dea.get("provider_name") if dea else (tax.get("provider_name") if tax else None)),
-        "tax_id_ein":          tax.get("ein")                   if tax   else None,
-        "business_name":       tax.get("business_name")         if tax   else None,
-        "license_number":      lic.get("license_number")        if lic   else None,
-        "license_status":      lic.get("license_status")        if lic   else None,
-        "date_of_birth":       lic.get("date_of_birth")         if lic   else None,
-        "gender":              lic.get("gender")                 if lic   else None,
-        "lic_issue_date":      lic.get("issue_date")             if lic   else None,
-        "lic_expiry_date":     lic.get("expiration_date")       if lic   else None,
-        "dea_number":          dea.get("dea_number")             if dea   else None,
-        "dea_issue_date":      dea.get("issue_date")             if dea   else None,
-        "dea_expiry_date":     dea.get("expiration_date")       if dea   else None,
-        "dea_schedules":       dea.get("schedules")              if dea   else None,
-        "insurer_name":        mal.get("insurer_name")           if mal   else None,
-        "policy_number":       mal.get("policy_number")          if mal   else None,
-        "mal_effective_date":  mal.get("effective_date")         if mal   else None,
-        "mal_expiry_date":     mal.get("expiration_date")        if mal   else None,
-        "coverage_per_claim":  mal.get("coverage_per_claim")     if mal   else None,
-        "coverage_aggregate":  mal.get("coverage_aggregate")     if mal   else None,
-        "board_cert_type":     board.get("certification_type")   if board else None,
-        "board_cert_id":       board.get("certification_id")     if board else None,
-        "certifying_board":    board.get("certifying_board")     if board else None,
-        "board_status":        board.get("status")               if board else None,
-        "board_specialty":     board.get("specialty_code")       if board else None,
-        "board_issue_date":    board.get("issue_date")           if board else None,
-        "board_expiry_date":   board.get("expiration_date")      if board else None,
-        "address_street":      lic.get("address_street")         if lic   else None,
-        "address_city":        lic.get("address_city")           if lic   else None,
-        "address_state":       lic.get("address_state")          if lic   else None,
-        "address_zip":         lic.get("address_zip")            if lic   else None,
-        "contact_phone":       lic.get("contact_phone")          if lic   else None,
-        "contact_email":       lic.get("contact_email")          if lic   else None,
+        "tax_id_ein":          tax.get("ein")                       if tax   else None,
+        "business_name":       tax.get("legal_business_name") or tax.get("business_name") if tax else None,
+        "license_number":      lic.get("license_number")            if lic   else None,
+        "license_status":      lic.get("license_status")            if lic   else None,
+        "date_of_birth":       lic.get("date_of_birth")             if lic   else None,
+        "gender":              lic.get("gender")                     if lic   else None,
+        "lic_issue_date":      lic.get("issue_date")                 if lic   else None,
+        "lic_expiry_date":     lic.get("expiration_date")           if lic   else None,
+        "dea_number":          dea.get("dea_number")                 if dea   else None,
+        "dea_issue_date":      dea.get("issue_date")                 if dea   else None,
+        "dea_expiry_date":     dea.get("dea_expiration")            if dea   else None,
+        "dea_schedules":       dea.get("schedules")                  if dea   else None,
+        "insurer_name":        mal.get("malpractice_insurer")        if mal   else None,
+        "policy_number":       mal.get("policy_number")              if mal   else None,
+        "mal_effective_date":  mal.get("effective_date")             if mal   else None,
+        "mal_expiry_date":     mal.get("policy_expiration")         if mal   else None,
+        "coverage_per_claim":  mal.get("coverage_per_claim")         if mal   else None,
+        "coverage_aggregate":  mal.get("coverage_aggregate")         if mal   else None,
+        "board_cert_type":     board.get("certification_type")       if board else None,
+        "board_cert_id":       board.get("certification_id")         if board else None,
+        "certifying_board":    board.get("certifying_board")         if board else None,
+        "board_status":        board.get("board_cert_status")        if board else None,
+        "board_specialty":     board.get("specialty_code")           if board else None,
+        "board_issue_date":    board.get("issue_date")               if board else None,
+        "board_expiry_date":   board.get("expiration_date")          if board else None,
+        "address_street":      lic.get("address_street")             if lic   else None,
+        "address_city":        lic.get("address_city")               if lic   else None,
+        "address_state":       lic.get("address_state")              if lic   else None,
+        "address_zip":         lic.get("address_zip")                if lic   else None,
+        "contact_phone":       lic.get("contact_phone")              if lic   else None,
+        "contact_email":       lic.get("contact_email")              if lic   else None,
     }
 
     source_map = {
@@ -484,26 +486,26 @@ async def update_provider_field(
         raise HTTPException(status_code=400, detail=f"Invalid table: {table}")
 
     EDITABLE = {
-        "tax_id": ["ein", "provider_name", "first_name", "last_name", "business_name",
-                   "issue_date", "form_type", "address_street", "address_city",
+        "tax_id": ["ein", "legal_business_name", "provider_name", "first_name", "last_name",
+                   "business_name", "issue_date", "form_type", "address_street", "address_city",
                    "address_state", "address_zip", "address_country"],
         "state_medical_license": ["license_number", "provider_name", "first_name", "last_name",
                                    "date_of_birth", "gender", "license_status", "issue_date",
                                    "expiration_date", "address_street", "address_city",
                                    "address_state", "address_zip", "address_country",
                                    "contact_phone", "contact_email"],
-        "malpractice_insurance": ["policy_number", "provider_name", "insurer_name",
-                                   "effective_date", "expiration_date", "specialty",
+        "malpractice_insurance": ["policy_number", "provider_name", "malpractice_insurer",
+                                   "effective_date", "policy_expiration", "specialty",
                                    "coverage_per_claim", "coverage_aggregate",
                                    "address_street", "address_city", "address_state",
                                    "address_zip", "address_country", "contact_phone", "contact_email"],
-        "dea_certificate": ["dea_number", "provider_name", "first_name", "last_name",
-                             "business_activity", "issue_date", "expiration_date",
+        "dea_certificate": ["dea_number", "dea_expiration", "provider_name", "first_name", "last_name",
+                             "business_activity", "issue_date",
                              "schedules", "fee_paid", "address_street", "address_city",
                              "address_state", "address_zip"],
         "board_certification": ["provider_name", "certification_type", "certifying_board",
                                   "certification_id", "issue_date", "expiration_date",
-                                  "status", "specialty_code"],
+                                  "board_cert_status", "specialty_code"],
     }
 
     if req.field not in EDITABLE.get(table, []):
